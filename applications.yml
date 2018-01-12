@@ -6,6 +6,10 @@
     - python
 
   tasks:
+  - name: ensure virtualenv (for pipsi)
+    dnf: name=python-virtualenv state=present
+    become: true
+
   - name: install pipsi
     shell: curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python
     args:
