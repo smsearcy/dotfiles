@@ -1,36 +1,28 @@
 ---
-- name: install python tooling
-  hosts: localhost
+- hosts: localhost
   connection: local
-  tags:
-    - python
 
   tasks:
-  - name: ensure virtualenv (for pipsi)
-    dnf: name=python-virtualenv state=present
-    become: true
-
-  - name: install pipsi
-    shell: curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python
-    args:
-      creates: ~/.local/bin/pipsi
-
-  - name: install python tools via pipsi
-    shell: pipsi install {{ item }}
-    args:
-      creates: ~/.local/bin/{{ item }}
-    with_items:
-      - pew
-      - pipenv
-      - cookiecutter
+  - name: python tools
+    block:
+    - name: install pipsi
+      # using Python 3 because it's 2018 and it doesn't require virtualenv to be installed
+      # curl causes a warning but I think this is cleaner than creating a temporary file
+      shell: curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python3
+      args:
+        creates: ~/.local/bin/pipsi
+  
+    - name: install python tools via pipsi
+      shell: pipsi install {{ item }}
+      args:
+        creates: ~/.local/bin/{{ item }}
+      with_items:
+        - pew
+        - pipenv
+        - cookiecutter
+    tags:
+      - python
     
-- name: configure vagrant
-  hosts: localhost
-  connection: local
-  tags:
-    - devtools
-
-  tasks:
   - name: install vagrant
     dnf: name={{ item }} state=present
     become: true
@@ -38,4 +30,7 @@
       - vagrant-libvirt
       - vagrant-hostmanager
       - vagrant-sshfs
+
+    tags:
+    - devtools
 
