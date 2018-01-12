@@ -1,0 +1,42 @@
+---
+- name: install python tooling
+  hosts: localhost
+  connection: local
+  tags:
+    - python
+
+  tasks:
+  - name: install pipsi
+    shell: curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python
+    args:
+      creates: ~/.local/bin/pipsi
+
+  - name: install python tools via pipsi
+    shell: pipsi install {{ item }}
+    args:
+      creates: ~/.local/bin/{{ item }}
+    with_items:
+      - pipenv
+      - cookiecutter
+    
+- name: configure vagrant
+  hosts: localhost
+  connection: local
+  tags:
+    - devtools
+
+  tasks:
+  - name: install vagrant
+    dnf: name=vagrant state=present
+    become: true
+    
+  - name: install vagrant plugins
+    dnf: name={{ item }} state=present
+    become: true
+    with_items:
+      - vagrant-libvirt
+      - vagrant-libvirt-doc
+      - vagrant-hostmanager
+      - vagrant-sshfs
+      - vagrant-sshfs
+

@@ -3,8 +3,6 @@
 
 Various configuration files, such as vimrc, bashrc, etc.
 
-Optionally installs preferred applications via Ansible.
-
 To install on Fedora:
 
     
@@ -12,3 +10,17 @@ To install on Fedora:
 
 
 Based on https://github.com/Nurdok/dotfiles
+
+
+Preferred Applications
+----------------------
+
+Install preferred applications (via Ansible):
+
+* pipsi
+  * cookiecutter
+  * pipenv
+* tmux
+* vim-enhanced
+* Vagrant
+
