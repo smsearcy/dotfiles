@@ -24,6 +24,7 @@
       - python
     
   - name: install vagrant
+    # add user to 'libvirt' group to avoid authentication prompts
     dnf: name={{ item }} state=present
     become: true
     with_items:

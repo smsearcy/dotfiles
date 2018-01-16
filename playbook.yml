@@ -1,148 +1,99 @@
 ---
-- name: configure zsh
-  hosts: 127.0.0.1
+- hosts: localhost
   connection: local
 
   tasks:
-  - name: install zsh
-    apt: name=zsh state=present
-    become: true
+    - name: ensure pre-requisites
+      dnf: name={{ item }} state=present
+      with_items:
+        - libselinux-python
+      become: yes
 
-  - name: install git (required for oh-my-zsh)
-    apt: name=git state=present
-    become: true
-    
-  - name: install oh-my-zsh
-    shell: "sh -c \"$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)\""
-    args:
-      creates: ~/.oh_my_zsh
+    - name: install common apps
+      dnf: name={{ item }} state=present
+      with_items:
+        - git
+        - htop
+        - tmux
+        - vim-enhanced
+      become: yes
+      tags: common
 
-  - name: remove previous zsh theme
-    lineinfile: 
-      regexp: "^ZSH_THEME.*"
-      dest: ~/.zshrc
-      state: absent
- 
-  - name: set zsh theme
-    blockinfile: 
-      dest: ~/.zshrc
-      insertbefore: "source.*oh-my-zsh.sh"
-      marker: "# {mark} set zsh theme"
-      block: |
-        ZSH_THEME="blinks"
+    - name: configure Vim
+      block:
+        - name: ensure Vim directories
+          file:
+            path: "~/.vim/{{ item }}"
+            state: directory
+          with_items:
+            - autoload
+            - backup
+            - tmp
+            - undodir
 
-- name: configure vim
-  hosts: 127.0.0.1
-  connection: local
+        - name: install vim-plug
+          get_url:
+            url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+            dest: ~/.vim/autoload/plug.vim
 
-  tasks:
-  - name: install vim
-    apt: name=vim state=present
-    become: true
+        - name: configure vim
+          blockinfile:
+            path: ~/.vimrc
+            create: yes
+            marker: "\" {mark} {{ item.description }}"
+            block: "{{ item.text }}"
+          with_items:
+            - description: "plugins (vim-plug)"
+              text: |
+                call plug#begin('~/.vim/plugged')
+                Plug 'pearofducks/ansible-vim'
+                Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+                call plug#end()
+                map <C-n> :NERDTreeToggle<CR>
+                autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+            - description: "tabs"
+              text: |
+                set autoindent
+                set expandtab
+                set shiftwidth=4
+                set smarttab
+                set softtabstop=4
+            - description: "editing"
+              text: |
+                set history=100
+            - description: "search"
+              text: |
+                set ignorecase
+                set incsearch
+            - description: "display"
+              text: |
+                set scrolloff=6
+                set cursorline
+                set ruler
+                set number
+                set showcmd
+                colorscheme elflord
+                " highlight needs to go after colorscheme
+                highlight CursorLine term=None cterm=None ctermbg=black
+                set colorcolumn=80
+            - description: "filetype settings"
+              text: |
+                autocmd filetype text setlocal textwidth=78
+                autocmd filetype python setlocal colorcolumn=90
+            - description: "backups"
+              text: |
+                " Manage backups and swap files in a central location
+                " NOTE: vim doesn't create the directories
+                set backup
+                set backupdir=~/.vim/backup
+                set directory=~/.vim/tmp
+            - description: "undo"
+              text: |
+                " Persistent undo.
+                " NOTE: vim doesn't create the directories
+                set undofile
+                set undodir=~/.vim/undodir
 
-  - name: create helper dirs
-    file:
-      state: "directory"
-      path: "~/.vim/{{ item.name }}"
-    with_items:
-      - { name: "undodir" }
-      - { name: "backup" }
-      - { name: "tmp" } 
-      - { name: "colors" } 
-
-  - name: theme files
-    copy:
-      src: "{{ item.src }}"
-      dest: "~/.vim/colors/"
-    with_items:
-      - { src: "vim/256-jungle.vim" }
-      - { src: "vim/wombat256mod.vim" }
-
-  - name: vimrc
-    blockinfile: 
-      dest: ~/.vimrc
-      marker: "\n\" {mark} {{ item.description }}\n"
-      create: "yes"
-      block: "{{ item.text }}\n"
-    with_items:
-      - description: "tabs"
-        text: |
-          " Turn tabs into spaces
-          set shiftwidth=4
-          set tabstop=4
-          set expandtab 
-
-      - description: "display"
-        text: |
-          set colorcolumn=80
-          set number
-          " Highlight the current line
-          set cursorline
-          highlight CursorLine term=None cterm=None ctermbg=0
-
-          " 256-jungle changes something that makes wombat display better.
-          " I have no idea why.
-          colorscheme 256-jungle
-          colorscheme wombat256mod
-
-          " Set font in gvim only
-          set guifont=Consolas\ 10
-
-      - description: "editing"
-        text: |
-          " Comforable editing
-          set scrolloff=8
-
-      - description: "backups"
-        text: |
-          " Manage backups and swap files in a central location
-          " NOTE: vim doesn't create the directories, they need to be manually created:
-          " mkdir -p ~/.vim/backup
-          " mkdir -p ~/.vim/tmp
-          set backup
-          set backupdir=~/.vim/backup
-          set directory=~/.vim/tmp
-      - description: "undo"
-        text: |
-          " Persistent undo.
-          " NOTE: vim doesn't create the directories, they need to be manually created:
-          " mkdir -p ~/.vim/undodir
-          set undofile
-          set undodir=~/.vim/undodir
-      - description: "shortcuts"
-        text: |
-          " Newline without insert mode
-          nmap oo o<Esc>k
-          nmap OO O<Esc>j
-
-- name: configure virtualenv
-  hosts: 127.0.0.1
-  connection: local
-
-  tasks:
-  - name: ensure pip
-    shell: "curl -fsSL https://bootstrap.pypa.io/get-pip.py | python"
-    become: true
-    args:
-      creates: "/usr/local/bin/pip"
-
-  - name: install python packages
-    shell: "pip install {{ item.name }}"
-    become: true
-    with_items:
-      - { name: "virtualenv" }
-      - { name: "virtualenvwrapper" }
-
-  - name: zshrc
-    blockinfile: 
-      dest: ~/.zshrc
-      marker: "# {mark} {{ item.description }}"
-      create: "yes"
-      block: "{{ item.text }}\n"
-    with_items:
-      - description: "virtualenv"
-        text: |
-          export WORKON_HOME=$HOME/code/.virtualenvs
-          export PROJECT_HOME=$HOME/code/
-          source /usr/local/bin/virtualenvwrapper.sh
-
+      tags:
+        - common
+        - config
