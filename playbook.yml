@@ -50,7 +50,6 @@
                 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
                 call plug#end()
                 map <C-n> :NERDTreeToggle<CR>
-                autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
             - description: "tabs"
               text: |
                 set autoindent
@@ -76,10 +75,17 @@
                 " highlight needs to go after colorscheme
                 highlight CursorLine term=None cterm=None ctermbg=black
                 set colorcolumn=80
-            - description: "filetype settings"
+            - description: "autocommands"
               text: |
-                autocmd filetype text setlocal textwidth=78
-                autocmd filetype python setlocal colorcolumn=90
+                " copied from https://dougblack.io/words/a-good-vimrc.html
+                augroup configgroup
+                  " clear autocommands to prevent double processing
+                  autocmd!
+                  autocmd filetype text setlocal textwidth=78
+                  autocmd filetype python setlocal colorcolumn=90
+                  " close NERDTree
+                  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+                augroup END
             - description: "backups"
               text: |
                 " Manage backups and swap files in a central location
