@@ -1,4 +1,6 @@
 ---
+# Installation of common programs and basic configuration
+# TODO: how will Powerline work with PuTTY fonts? (should I break it out?)
 - hosts: localhost
   connection: local
 
@@ -16,7 +18,16 @@
         - htop
         - tmux
         - vim-enhanced
+        - vim-powerline
+        - tmux-powerline
+        - zsh
       become: yes
+      tags: common
+
+    - name: install Oh My Zsh
+      shell: "sh -c \"$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)\""
+      args:
+        creates: ~/.oh-my-zsh
       tags: common
 
     - name: configure Vim
@@ -99,7 +110,25 @@
                 " NOTE: vim doesn't create the directories
                 set undofile
                 set undodir=~/.vim/undodir
+            - description: "powerline"
+              text: |
+                " Helpful settings for the Powerline statusline
+                " (ensures the status lines show up)
+                set laststatus=2
+                set showtabline=2
+                set noshowmode
 
       tags:
         - common
         - config
+
+    - name: Configure htop
+      block:
+        - file:
+            path: ~/.config/htop
+            state: directory
+
+        - copy:
+            src: htoprc
+            dest: ~/.config/htop/htoprc
+      tags: config
