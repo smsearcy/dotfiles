@@ -132,3 +132,16 @@
             src: htoprc
             dest: ~/.config/htop/htoprc
       tags: config
+
+    - name: Configure tmux
+      copy:
+        src: tmux.conf
+        dest: ~/.tmux.conf
+      tags: config
+
+    - name: Copy global gitignore (need to configure manually)
+      copy:
+        src: gitignore
+        dest: ~/.gitignore_global
+      tags: config
+
