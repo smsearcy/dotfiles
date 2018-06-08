@@ -3,26 +3,25 @@
   connection: local
 
   tasks:
-  - name: python tools
-    block:
-    - name: install pipsi
-      # using Python 3 because it's 2018 and it doesn't require virtualenv to be installed
-      # curl causes a warning but I think this is cleaner than creating a temporary file
-      shell: curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python3
-      args:
-        creates: ~/.local/bin/pipsi
-  
-    - name: install python tools via pipsi
-      shell: pipsi install {{ item }}
-      args:
-        creates: ~/.local/bin/{{ item }}
-      with_items:
-        - pew
-        - pipenv
-        - cookiecutter
-        - tox
-    tags:
-      - python
+    - name: python tools
+      block:
+        - name: install pipsi
+          # using Python 3 because it's 2018 and it doesn't require virtualenv to be installed
+          # curl causes a warning but I think this is cleaner than creating a temporary file
+          shell: curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python3
+          args:
+            creates: ~/.local/bin/pipsi
+        - name: install python tools via pipsi
+          shell: pipsi install {{ item }}
+          args:
+            creates: ~/.local/bin/{{ item }}
+          with_items:
+            - pew
+            - pipenv
+            - cookiecutter
+            - tox
+      tags:
+        - python
     
   - name: Vagrant
     block:
@@ -62,7 +61,6 @@
           daemon_reload: true
       - debug:
           msg: "Add user to 'docker' group to eliminate need to run as root/sudo"
-
     become: true
     tags:
       - devtools
