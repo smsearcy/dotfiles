@@ -11,6 +11,7 @@
           shell: curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python3
           args:
             creates: ~/.local/bin/pipsi
+            warn: false
         - name: install python tools via pipsi
           shell: pipsi install {{ item }}
           args:
@@ -18,50 +19,51 @@
           with_items:
             - pew
             - pipenv
+            - poetry
             - cookiecutter
             - tox
       tags:
         - python
     
-  - name: Vagrant
-    block:
-      - name: ensure vagrant installed
-        dnf: name={{ item }} state=present
-        become: true
-        with_items:
-          - vagrant-libvirt
-          - vagrant-hostmanager
-          - vagrant-sshfs
-      - debug:
-          msg: "Add user to 'libvirt' group to avoid authentication prompts"
+    - name: Vagrant
+      block:
+        - name: ensure vagrant installed
+          dnf: name={{ item }} state=present
+          become: true
+          with_items:
+            - vagrant-libvirt
+            - vagrant-hostmanager
+            - vagrant-sshfs
+        - debug:
+            msg: "Add user to 'libvirt' group to avoid authentication prompts"
 
-    tags:
-      - devtools
-      - vagrant
+      tags:
+        - devtools
+        - vagrant
 
-  - name: Docker
-    block:
-      - name: ensure docker repository
-        get_url:
-          url: https://download.docker.com/linux/fedora/docker-ce.repo
-          dest: /etc/yum.repos.d/docker-ce.repo
-          mode: 0644
-          owner: root
-      - name: ensure docker installed
-        dnf:
-          name: docker-ce
-          state: present
-          # Stable release doesn't support Fedora 28 as of 2018-06-07
-          enablerepo: docker-ce-edge
-      - name: enable docker service
-        systemd:
-          name: docker
-          enabled: true
-          state: started
-          daemon_reload: true
-      - debug:
-          msg: "Add user to 'docker' group to eliminate need to run as root/sudo"
-    become: true
-    tags:
-      - devtools
-      - docker
+    - name: Docker
+      block:
+        - name: ensure docker repository
+          get_url:
+            url: https://download.docker.com/linux/fedora/docker-ce.repo
+            dest: /etc/yum.repos.d/docker-ce.repo
+            mode: 0644
+            owner: root
+        - name: ensure docker installed
+          dnf:
+            name: docker-ce
+            state: present
+            # Stable release doesn't support Fedora 28 as of 2018-06-07
+            enablerepo: docker-ce-edge
+        - name: enable docker service
+          systemd:
+            name: docker
+            enabled: true
+            state: started
+            daemon_reload: true
+        - debug:
+            msg: "Add user to 'docker' group to eliminate need to run as root/sudo"
+      become: true
+      tags:
+        - devtools
+        - docker
