@@ -1,2 +1,2 @@
 clean:
-	rm *.retry
+	find . -name "*.retry" -delete

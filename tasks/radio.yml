@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  connection: local
+
+  tasks:
+  - name: ham radio tools
+    dnf: 
+      name:
+        - aldo
+        - fldigi
+        - chirp
+      state: present
+    become: true
+
+    tags:
+    - radio
+
