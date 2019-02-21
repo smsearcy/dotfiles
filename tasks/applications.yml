@@ -5,15 +5,14 @@
   tasks:
     - name: python tools
       block:
-        - name: install pipsi
-          # using Python 3 because it's 2018 and it doesn't require virtualenv to be installed
+        - name: install pipx (replacement for pipsi)
           # curl causes a warning but I think this is cleaner than creating a temporary file
-          shell: curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python3
+          shell: curl https://raw.githubusercontent.com/cs01/pipx/master/get-pipx.py | python3
           args:
-            creates: ~/.local/bin/pipsi
+            creates: ~/.local/bin/pipx
             warn: false
-        - name: install python tools via pipsi
-          shell: pipsi install {{ item }}
+        - name: install python tools via pipx
+          shell: pipx install {{ item }}
           args:
             creates: ~/.local/bin/{{ item }}
           with_items:

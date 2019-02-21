@@ -6,21 +6,23 @@
 
   tasks:
     - name: ensure pre-requisites
-      dnf: name={{ item }} state=present
-      with_items:
-        - libselinux-python
+      dnf:
+        name:
+          - libselinux-python
+        state: latest
       become: yes
 
     - name: install common apps
-      dnf: name={{ item }} state=present
-      with_items:
-        - git
-        - htop
-        - tmux
-        - vim-enhanced
-        - vim-powerline
-        - tmux-powerline
-        - zsh
+      dnf:
+        name:
+          - git
+          - htop
+          - tmux
+          - vim-enhanced
+          - vim-powerline
+          - tmux-powerline
+          - zsh
+        state: latest
       become: yes
       tags: common
 
