@@ -15,6 +15,7 @@
     - name: install common apps
       dnf:
         name:
+          - backintime-qt
           - git
           - htop
           - tmux
