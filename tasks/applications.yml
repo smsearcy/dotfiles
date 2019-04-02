@@ -6,11 +6,11 @@
     - name: python tools
       block:
         - name: install pipx (replacement for pipsi)
-          # curl causes a warning but I think this is cleaner than creating a temporary file
-          shell: curl https://raw.githubusercontent.com/cs01/pipx/master/get-pipx.py | python3
-          args:
-            creates: ~/.local/bin/pipx
-            warn: false
+          pip:
+            name: "pipx"
+            state: "present"
+            extra_args: "--user"
+            virtualenv_python: "python3"
         - name: install python tools via pipx
           shell: pipx install {{ item }}
           args:
