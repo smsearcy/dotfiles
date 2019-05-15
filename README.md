@@ -60,4 +60,5 @@ To Do
 * Ensure config and common tags work on CentOS
 * Simplify Vim configuration - single block for (most) managed settings?
 * Use distro-specific tasks/variables?  (or just drop non-workstation settings)
+* Use Vim 8 packages instead of vim-plug (and `git` task to install)
 
