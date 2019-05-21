@@ -50,10 +50,13 @@
             owner: root
         - name: ensure docker installed
           dnf:
-            name: docker-ce
+            name:
+              - docker-ce
+              - docker-ce-cli
+              - containerd.io
             state: present
-            # Stable release doesn't support Fedora 28 as of 2018-06-07
-            enablerepo: docker-ce-edge
+            # In case stable doesn't support current version yet
+            #enablerepo: docker-ce-edge
         - name: enable docker service
           systemd:
             name: docker
