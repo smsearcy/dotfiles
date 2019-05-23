@@ -27,12 +27,13 @@
     - name: Vagrant
       block:
         - name: ensure vagrant installed
-          dnf: name={{ item }} state=present
+          dnf:
+            name:
+              - "@vagrant"
+              - "vagrant-hostmanager"
+              - "vagrant-sshfs"
+            state: present
           become: true
-          with_items:
-            - vagrant-libvirt
-            - vagrant-hostmanager
-            - vagrant-sshfs
         - debug:
             msg: "Add user to 'libvirt' group to avoid authentication prompts"
 
