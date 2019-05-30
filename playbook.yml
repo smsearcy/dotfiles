@@ -33,6 +33,15 @@
         creates: ~/.oh-my-zsh
       tags: common
 
+    - name: Configure zsh
+      copy:
+        src: "zshrc"
+        dest: "~/.zshrc"
+        mode: 0644
+      tags:
+        - common
+        - config
+
     - name: configure Vim
       block:
         - name: ensure Vim directories

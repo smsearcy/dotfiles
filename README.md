@@ -2,7 +2,7 @@
 ======
 
 [Ansible](https://www.ansible.com/) playbooks to manage various configuration 
-files and (optionally) install common applications.
+files and (optionally) install common applications for my workstation(s).
 
 To install on Fedora (this requires Git and will check the repository out to 
 `~/Projects/dotfiles`):
@@ -56,9 +56,7 @@ Installs other development related tools.  Requires providing "become" password.
 To Do
 -----
 
-* Finish implementing the items laid out above
-* Ensure config and common tags work on CentOS
 * Simplify Vim configuration - single block for (most) managed settings?
-* Use distro-specific tasks/variables?  (or just drop non-workstation settings)
 * Use Vim 8 packages instead of vim-plug (and `git` task to install)
+* Add *Podman* and *Buildah* (replacing *Docker*?)
 
