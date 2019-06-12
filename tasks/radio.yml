@@ -9,6 +9,10 @@
         - aldo
         - fldigi
         - chirp
+        - CubicSDR
+        - rtl-sdr
+        - soapy-rtlsdr
+        - qsstv
       state: present
     become: true
 
