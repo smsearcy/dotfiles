@@ -23,7 +23,7 @@
             - tox
       tags:
         - python
-    
+
     - name: Vagrant
       block:
         - name: ensure vagrant installed
@@ -70,3 +70,28 @@
       tags:
         - devtools
         - docker
+
+    - name: VS Code
+      block:
+        - name: Ensure VS Code repository
+          copy:
+            src: vscode.repo
+            dest: /etc/yum.repos.d/vscode.repo
+            owner: root
+            group: root
+            mode: 0644
+
+        - name: Ensure Microsoft's repo key
+          rpm_key:
+            state: present
+            key: https://packages.microsoft.com/keys/microsoft.asc
+
+        - name: Ensure VS Code installed
+          dnf:
+            name: code
+            state: present
+
+      become: true
+      tags:
+        - devtools
+        - vscode
