@@ -34,8 +34,13 @@
               - "vagrant-sshfs"
             state: present
           become: true
-        - debug:
-            msg: "Add user to 'libvirt' group to avoid authentication prompts"
+        - name: ensure current user is member of 'libvirt' group
+          # "become" ensures that the user has the rights to add themselves to the group
+          user:
+            name: "{{ ansible_user_id }}"
+            groups: libvirt
+            append: yes
+          become: true
 
       tags:
         - devtools
