@@ -99,4 +99,4 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # added for pipx
-export PATH="~/.local/bin:$PATH"
+export PATH=~/.local/bin:$PATH
