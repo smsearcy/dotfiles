@@ -15,11 +15,10 @@
           shell: pipx install {{ item }}
           args:
             creates: ~/.local/bin/{{ item }}
-          with_items:
-            - pew
-            - pipenv
-            - poetry
+          loop:
             - cookiecutter
+            - ipython
+            - pre-commit
             - tox
       tags:
         - python
@@ -34,12 +33,20 @@
               - "vagrant-sshfs"
             state: present
           become: true
-        - name: ensure current user is member of 'libvirt' group
+        - name: ensure current user is member of 'libvirt' & 'vagrant' groups
           # "become" ensures that the user has the rights to add themselves to the group
           user:
             name: "{{ ansible_user_id }}"
-            groups: libvirt
+            groups:
+              - libvirt
+              - vagrant
             append: yes
+          become: true
+        - name: grant nfs permissions for vagrant group
+          copy:
+            src: sudoers-vagrant
+            dest: /etc/sudoers.d/vagrant
+            mode: 0400
           become: true
 
       tags:

@@ -7,15 +7,18 @@
     dnf: 
       name:
         - aldo
-        - fldigi
         - chirp
-        - CubicSDR
+        - fldigi
+        - gqrx
+        - js8call
+        - qsstv
         - rtl-sdr
         - soapy-rtlsdr
-        - qsstv
+        - wsjtx
       state: present
     become: true
 
     tags:
+    - never
     - radio
 

@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: ensure Podman installed
+      dnf:
+        name:
+          - podman
+          - podman-compose
+          - podman-docker
+        state: present
+      tags:
+        - devtools
+
+    - name: ensure KVM installed (does this overlap with Vagrant?)
+      dnf:
+        name:
+          - libvirt-daemon-kvm
+          - qemu-kvm
+        state: present
+      tags:
+        - devtools
