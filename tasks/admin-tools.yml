@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: ensure Cockpit installed
+      dnf:
+        name:
+          - cockpit
+          - cockpit-dashboard
+          - cockpit-pcp
+        state: present
+
+    - name: ensure Cockpit enabled
+      systemd:
+        name: cockpit.socket
+        enabled: yes
+        state: started
+        daemon_reload: yes
+
+    - name: ensure Tuning Daemon installed
+      dnf:
+        name:
+          - tuned
+        state: present
+
+    - name: ensure Tuning Daemon enabled
+      systemd:
+        name: tuned
+        enabled: yes
+        state: started
+        daemon_reload: yes
